@@ -11,7 +11,7 @@ app.use("/todo", todoRouter);
 
 AppDataSource.initialize()
 	.then(() => {
-		console.log("DB connected");
+		app.listen(port);
 	})
 	.catch((err) => {
 		console.log("DB connection error: ", err);

@@ -3,7 +3,6 @@ import express from "express";
 import bodyParser from "body-parser";
 import { router as todoRouter } from "../routes/todo.route";
 import { AppDataSource } from "../database/db.service";
-import exp from "constants";
 
 const app = express();
 app.use(bodyParser.json());

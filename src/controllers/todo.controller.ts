@@ -52,12 +52,12 @@ export class TodoController {
 
 		if (!!todo.endDate && !/^\d{4}-\d{2}-\d{2}$/.test(todo.endDate))
 			throw new Error("Invalid endDate format");
-		
+
 		const isExisted = await this.todoService.getById(parseInt(id));
 		if (!isExisted) throw new Error("Todo not found");
 
-		const IdAsInt = parseInt(id);
-		const result = await this.todoService.update(IdAsInt, todo);
+		const result = await this.todoService.update(parseInt(id), todo);
+
 		if (result.affected === 1) return todo;
 		else throw new Error("Todo not updated");
 	}
