@@ -1,0 +1,9 @@
+{
+	"execMap": {
+		"ts": "ts-node"
+	},
+	"watch": ["src/**/*.ts"],
+	"ext": "ts",
+	"ignore": ["src/**/*.spec.ts"],
+	"exec": "ts-node ./app.ts"
+}
