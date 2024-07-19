@@ -1,3 +1,4 @@
+import { UserDto } from "@/dto/user.dto";
 import { UserService } from "@/services/user.service";
 
 export class UserController {
@@ -5,8 +6,11 @@ export class UserController {
 
 	async getUsers() {}
 
-	async getUserById(id: string) {}
-	
+	async getUserById(id: string): Promise<UserDto> {
+		const user = await this.userService.getUserById(parseInt(id));
+		return <UserDto>user;
+	}
+
 	async updateUserById(id: string) {}
 
 	async deleteUserById(id: string) {}
