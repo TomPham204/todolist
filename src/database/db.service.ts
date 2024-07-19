@@ -8,8 +8,6 @@ export const AppDataSource = new DataSource({
 	type: "sqlite",
 	database: ":memory:",
 	synchronize: true,
-	logging: true,
-	entities: [
-		join(__dirname, "../entity/*.entity{.ts,.js}"),
-	],
+	logging: false,
+	entities: [join(__dirname, "../entity/*.entity{.ts,.js}")],
 });

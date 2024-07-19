@@ -2,10 +2,10 @@ import express from "express";
 import { TodoController } from "@/controllers/todo.controller";
 import { TodoMiddleware } from "@/middlewares/todo.middleware";
 
-const router = express.Router();
+const todoRouter = express.Router();
 const todoController = new TodoController();
 
-router.get("/", async (req, res) => {
+todoRouter.get("/", async (req, res) => {
 	try {
 		const todos = await todoController.get();
 		res.status(200).json(todos);
@@ -14,7 +14,7 @@ router.get("/", async (req, res) => {
 	}
 });
 
-router.get("/:id", TodoMiddleware.isValidUserId, async (req, res) => {
+todoRouter.get("/:id", TodoMiddleware.isValidUserId, async (req, res) => {
 	try {
 		const todo = await todoController.getById(req.params.id);
 		return res.status(200).json(todo);
@@ -23,7 +23,7 @@ router.get("/:id", TodoMiddleware.isValidUserId, async (req, res) => {
 	}
 });
 
-router.post("/", async (req, res) => {
+todoRouter.post("/", async (req, res) => {
 	try {
 		const todo = await todoController.create(req.body);
 		return res.status(201).json(todo);
@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
 	}
 });
 
-router.put("/:id", TodoMiddleware.isValidUserId, async (req, res) => {
+todoRouter.put("/:id", TodoMiddleware.isValidUserId, async (req, res) => {
 	try {
 		const todo = await todoController.update(req.params.id, req.body);
 		return res.status(200).json(todo);
@@ -41,7 +41,7 @@ router.put("/:id", TodoMiddleware.isValidUserId, async (req, res) => {
 	}
 });
 
-router.delete("/:id", TodoMiddleware.isValidUserId, async (req, res) => {
+todoRouter.delete("/:id", TodoMiddleware.isValidUserId, async (req, res) => {
 	try {
 		await todoController.delete(req.params.id);
 		return res.status(204).send();
@@ -50,4 +50,4 @@ router.delete("/:id", TodoMiddleware.isValidUserId, async (req, res) => {
 	}
 });
 
-export { router };
+export { todoRouter };

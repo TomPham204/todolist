@@ -1,13 +1,18 @@
-import { AppDataSource } from "./database/db.service";
-import { router as todoRouter } from "./routes/todo.route";
 import "reflect-metadata";
 import express from "express";
+import { AppDataSource } from "./database/db.service";
+
+import { todoRouter } from "./routes/todo.route";
+import { authRouter } from "./routes/auth.route";
+import { userRouter } from "./routes/user.route";
 
 const port = 3005;
 const app = express();
 
 app.use(express.json());
 app.use("/todo", todoRouter);
+app.use("/auth", authRouter);
+app.use("/user", userRouter);
 
 AppDataSource.initialize()
 	.then(() => {
