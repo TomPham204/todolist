@@ -7,7 +7,7 @@
 		"start:dev": "nodemon -x ts-node -r tsconfig-paths/register src/app.ts",
 		"build": "tsc && tsc-alias",
 		"start:prod": "node -r tsconfig-paths/register dist/src/app.js",
-		"test": "jest"
+		"test": "jest --verbose"
 	},
 	"author": "",
 	"license": "ISC",
