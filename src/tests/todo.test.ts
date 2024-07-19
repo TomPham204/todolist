@@ -1,7 +1,7 @@
 import request from "supertest";
 import express from "express";
 import bodyParser from "body-parser";
-import { router as todoRouter } from "../routes/todo.route";
+import { todoRouter } from "../routes/todo.route";
 import { AppDataSource } from "../database/db.service";
 
 const app = express();
