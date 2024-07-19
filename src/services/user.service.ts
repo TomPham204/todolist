@@ -1,6 +1,7 @@
 import { Repository } from "typeorm";
 import { AppDataSource } from "../database/db.service";
 import { User } from "@/entity/user.entity";
+import { CreateUserDto } from "@/dto/user.dto";
 
 export class UserService {
 	constructor(
@@ -8,7 +9,9 @@ export class UserService {
 			"User"
 		)
 	) {}
-	async createUser() {}
+	createUser(newUser: CreateUserDto) {
+		return this.userRepository.save(newUser);
+	}
 
 	async updateUser(id: number) {}
 
