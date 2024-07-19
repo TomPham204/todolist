@@ -1,17 +1,22 @@
 import request from "supertest";
 import express from "express";
 import bodyParser from "body-parser";
+<<<<<<< HEAD
 import { AppDataSource } from "../database/db.service";
 import { Repository } from "typeorm";
 import { User } from "@/entity/user.entity";
 import { userRouter } from "@/routes/user.route";
+=======
+import { userRouter } from "@/routes/user.route";
+import { AppDataSource } from "../database/db.service";
+>>>>>>> 19fe3c1 (write unit test Todo API)
 
 const app = express();
 app.use(bodyParser.json());
 app.use("/user", userRouter);
 
 async function initializeTestApp() {
-	await AppDataSource.initialize();
+    await AppDataSource.initialize();
 }
 
 async function addUser() {
@@ -25,11 +30,11 @@ async function addUser() {
 }
 
 beforeAll(async () => {
-	await initializeTestApp();
+    await initializeTestApp();
 });
 
-describe("User API", () => {
-	it("GET /user/:id - success", async () => {
+describe("Test user API", () => {
+    it("GET /user/:id - success", async () => {
 		await addUser();
 		const result = await request(app).get("/user/1");
 		expect(result.statusCode).toEqual(200);
@@ -46,4 +51,25 @@ describe("User API", () => {
 		expect(result.statusCode).toEqual(400);
 		expect(result.body.message).toEqual("Invalid user id");
 	});
+
+    it("DELETE /user/:id - Should delete user fail when invalid id", async () => {
+        const response = await request(app).delete("/user/asdfasdf");
+        const actualResponse = response.body.message;
+
+        expect(actualResponse).toEqual("Invalid Id");
+        expect(response.statusCode).toEqual(400);
+    });
+
+    it("DELETE /user/:id - Should delete user fail when path incorrect", async () => {
+        const response = await request(app).delete("/user/");
+        expect(response.statusCode).toEqual(404);
+    });
+
+    it("DELETE /user/:id - Should delete user fail when it not exists", async () => {
+        const response = await request(app).delete("/user/1");
+        const actualResponse = response.body.message;
+
+        expect(actualResponse).toEqual("User not exists");
+        expect(response.statusCode).toEqual(400);
+    });
 });

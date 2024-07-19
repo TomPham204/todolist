@@ -31,7 +31,17 @@ userRouter.put("/:id", async (req, res) => {
 
 userRouter.delete("/:id", async (req, res) => {
 	try {
-	} catch (error) {}
+		const userId = Number(req.params.id);
+		const result = await userController.deleteUserById(userId);
+		
+		return res.status(result.statusCode).json({
+			"statusCode": result.statusCode,
+			"message": result.message
+		});
+	} catch (error) {
+		const err = (error as Error)
+		res.status(400).json({ "message": err.message });
+	}
 });
 
 export { userRouter };
