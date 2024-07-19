@@ -6,16 +6,16 @@ import { CreateUserDto } from "@/dto/user.dto";
 export class UserService {
 	constructor(
 		private userRepository: Repository<User> = AppDataSource.getRepository(
-			"User"
+			User
 		)
-	) {}
+	) { }
 	createUser(newUser: CreateUserDto) {
-		return this.userRepository.save(newUser);
+		return this.userRepository.insert(newUser);
 	}
 
-	async updateUser(id: number) {}
+	async updateUser(id: number) { }
 
-	async getUsers() {}
+	async getUsers() { }
 
-	async getUserById(id: number) {}
+	async getUserById(id: number) { }
 }

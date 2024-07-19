@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, Index, Unique } from "typeorm";
 
 @Entity()
 export class User {
@@ -8,6 +8,9 @@ export class User {
 
 	@Column("text")
 	name: string;
+
+	@Column("text", { unique: true })
+	email: string;
 
 	@Column("text")
 	availableStart: string; // this user is available starting from time availableStart. should be time and minute in 24hrs format. e.g. 13:25
