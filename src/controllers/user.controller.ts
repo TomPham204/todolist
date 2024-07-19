@@ -13,5 +13,12 @@ export class UserController {
 
 	async updateUserById(id: string) {}
 
-	async deleteUserById(id: string) {}
+	async deleteUserById(id: number): Promise<{ statusCode: number, message: string }> {
+		const response = (await this.userService.deleteUserById(id)).affected;
+		if (response != 1) {
+			return { statusCode: 400, message: "failed" };
+		}
+
+		return { statusCode: 200, message: "success" };
+	}
 }
