@@ -6,22 +6,24 @@ const userController = new UserController();
 
 userRouter.get("/", async (req, res) => {
 	try {
-	} catch (error) {}
+		const todos = await userController.getUsers();
+		res.status(200).json(todos);
+	} catch (error) { }
 });
 
 userRouter.get("/:id", async (req, res) => {
 	try {
-	} catch (error) {}
+	} catch (error) { }
 });
 
 userRouter.put("/:id", async (req, res) => {
 	try {
-	} catch (error) {}
+	} catch (error) { }
 });
 
 userRouter.delete("/:id", async (req, res) => {
 	try {
-	} catch (error) {}
+	} catch (error) { }
 });
 
 export { userRouter };

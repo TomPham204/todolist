@@ -7,12 +7,26 @@ export class UserService {
 		private userRepository: Repository<User> = AppDataSource.getRepository(
 			"User"
 		)
-	) {}
-	async createUser() {}
+	) { }
+	//async createUser() {}
+	async createUser(user: User) {
+		const formattedUser = {
+			name: user.name,
+			availabletart: user.availableStart,
+			availableEnd: user.availableEnd,
+		};
+		const res = await this.userRepository.save(formattedUser);
+		return res;
+	}
 
-	async updateUser(id: number) {}
+	async updateUser(id: number) { }
 
-	async getUsers() {}
+	async getUsers() {
+		const res = await this.userRepository.find();
+		return res;
+	}
 
-	async getUserById(id: number) {}
+	async getUserById(id: number) { }
+
+
 }
