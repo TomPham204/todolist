@@ -4,6 +4,9 @@ import user from "./mock/user.mock.json"
 import { AuthController } from "@/controllers/auth.controller";
 import { AppDataSource } from "@/database/db.service";
 import { User } from "@/entity/user.entity";
+import jwt, { JsonWebTokenError } from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 const authService = new AuthService();
 
@@ -12,6 +15,11 @@ async function initializeTestApp() {
 }
 
 describe("Auth Service", () => {
+  const jwtPayload = {
+    sub: 1,
+    email: "a@a.com"
+  };
+
   it("bcrypt.hash should be called", async () => {
     const password = "password";
     bcrypt.hash = jest.fn().mockResolvedValue("hashedPassword");
@@ -36,6 +44,29 @@ describe("Auth Service", () => {
     const isValid = await authService.compare(password, hashedPassword);
     expect(isValid).toBe(false);
   });
+
+  it("jwt.sign should be called", async () => {
+    jest.spyOn(jwt, "sign");
+    const token = authService.encode(jwtPayload);
+    expect(jwt.sign).toHaveBeenCalled();
+    expect(typeof token).toBe("string");
+  });
+
+  it("jwt.verify should be called", async () => {
+    const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRATION,
+      algorithm: "HS256"
+    });
+    jest.spyOn(jwt, "verify");
+    const decoded = authService.decode(token);
+    expect(jwt.verify).toHaveBeenCalled();
+    expect(decoded).toMatchObject(jwtPayload);
+  });
+
+  it("Should throw an error for invalid token", async () => {
+    expect(() => authService.decode("invalidToken")).toThrow();
+  }
+  );
 });
 
 describe("Auth Controller", () => {
