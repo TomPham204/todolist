@@ -12,11 +12,19 @@ describe("Auth Service", () => {
     expect(hashedPassword).toBe("hashedPassword");
   });
 
-  it("Should compare a valid bcrypt hash", async () => {
+  it("Should return true for a valid bcrypt hash", async () => {
     const password = "password";
-    const hashedPassword = "$2a$12$Sfb1/y4FLynRXESMTN0bVOx3c.Do6TueE/Z0ebsZaSm9kpBFTcfeu";
+    const hashedPassword = "$2a$12$Sfb1/y4FLynRXESMTN0bVOx3c.Do6TueE/Z0ebsZaSm9kpBFTcfeu"; // Hash for "password"
 
     const isValid = await authService.compare(password, hashedPassword);
     expect(isValid).toBe(true);
+  });
+
+  it("Should return false for an invalid password", async () => {
+    const password = "invalidPassword";
+    const hashedPassword = "$2a$12$Sfb1/y4FLynRXESMTN0bVOx3c.Do6TueE/Z0ebsZaSm9kpBFTcfeu"; // Hash for "password"
+
+    const isValid = await authService.compare(password, hashedPassword);
+    expect(isValid).toBe(false);
   });
 });
