@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { DeleteResult, Repository } from "typeorm";
 import { AppDataSource } from "../database/db.service";
 import { User } from "@/entity/user.entity";
 
@@ -33,7 +33,20 @@ export class UserService {
 		return res;
 	}
 
-	async getUserById(id: number) { }
+	async getUserById(id: number) {
+		return (await this.userRepository.findOne({ where: { id } })) || null;
+	}
 
+	async deleteUserById(id: number): Promise<DeleteResult> {
+		if (id == null || !Number(id)) {
+			throw new Error("Invalid Id");
+		}
+		
+		const user = await this.userRepository.findOneBy({ id: id });
+		if (user == null) {
+			throw new Error("User not exists");
+		}
 
+		return await this.userRepository.delete({ id: user.id });
+	}
 }

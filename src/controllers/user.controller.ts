@@ -1,5 +1,4 @@
 import { UserDto } from "@/dto/user.dto";
-import { User } from "@/entity/user.entity";
 import { UserService } from "@/services/user.service";
 
 export class UserController {
@@ -10,7 +9,11 @@ export class UserController {
 		return res;
 	}
 
-	async getUserById(id: string) { }
+	async getUserById(id: string): Promise<UserDto> {
+		const user = await this.userService.getUserById(parseInt(id));
+		return <UserDto>user;
+	}
+
 
 	async updateUserById(id: string, user: UserDto ) {
 		const result = await this.userService.updateUser(parseInt(id), user);
@@ -18,5 +21,12 @@ export class UserController {
 		else throw new Error("Todo not updated");
 	 }
 
-	async deleteUserById(id: string) { }
+	async deleteUserById(id: number): Promise<{ statusCode: number, message: string }> {
+		const response = (await this.userService.deleteUserById(id)).affected;
+		if (response != 1) {
+			return { statusCode: 400, message: "failed" };
+		}
+
+		return { statusCode: 200, message: "success" };
+	}
 }
