@@ -65,8 +65,16 @@ describe("Test user API", () => {
 		const response = await request(app).delete("/user/2");
 		const actualResponse = response.body.message;
 
-        expect(actualResponse).toEqual("User not exists");
-        expect(response.statusCode).toEqual(400);
+		expect(actualResponse).toEqual("User not exists");
+		expect(response.statusCode).toEqual(400);
+	});
+
+   it("DELETE /user/:id - Should delete user by id success", async () => {
+        const response = await request(app).delete("/user/1");
+        const actualResponse = response.body.message;
+
+        expect(actualResponse).toEqual("success");
+        expect(response.statusCode).toEqual(200);
     });
 });
 
