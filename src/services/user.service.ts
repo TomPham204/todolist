@@ -15,11 +15,18 @@ export class UserService {
 			availabletart: user.availableStart,
 			availableEnd: user.availableEnd,
 		};
+		console.log(user, 'user');
+		
 		const res = await this.userRepository.save(formattedUser);
 		return res;
 	}
 
-	async updateUser(id: number) { }
+	async updateUser(id: number, user:User ) { 
+		const existedUser = await this.userRepository.findOne({ where: { id } }) || null;
+		if (!existedUser) throw new Error("User not found");
+		const result = await this.userRepository.update(id, user);
+		return result;
+	}
 
 	async getUsers() {
 		const res = await this.userRepository.find();
