@@ -65,9 +65,9 @@ describe("Test user API", () => {
 		const response = await request(app).delete("/user/2");
 		const actualResponse = response.body.message;
 
-		expect(actualResponse).toEqual("User not exists");
-		expect(response.statusCode).toEqual(400);
-	});
+        expect(actualResponse).toEqual("User not exists");
+        expect(response.statusCode).toEqual(400);
+    });
 });
 
 describe("Test user service", () => {
