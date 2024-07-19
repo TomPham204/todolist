@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 const authService = new AuthService();
 
 describe("Auth Service", () => {
-  it("Should create a valid bcrypt hash", async () => {
+  it("bcrypt.hash should be called", async () => {
     const password = "password";
     bcrypt.hash = jest.fn().mockResolvedValue("hashedPassword");
     jest.spyOn(bcrypt, "hash");
