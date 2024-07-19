@@ -75,6 +75,7 @@ describe("Test user API", () => {
     });
 
     it("DELETE /user/:id - Should delete user by id success", async () => {
+        await addUser()
         const response = await request(app).delete("/user/1");
         const actualResponse = response.body.message;
 
