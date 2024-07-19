@@ -1,15 +1,10 @@
 import request from "supertest";
 import express from "express";
 import bodyParser from "body-parser";
-<<<<<<< HEAD
 import { AppDataSource } from "../database/db.service";
 import { Repository } from "typeorm";
 import { User } from "@/entity/user.entity";
 import { userRouter } from "@/routes/user.route";
-=======
-import { userRouter } from "@/routes/user.route";
-import { AppDataSource } from "../database/db.service";
->>>>>>> 19fe3c1 (write unit test Todo API)
 
 const app = express();
 app.use(bodyParser.json());
@@ -66,7 +61,7 @@ describe("Test user API", () => {
     });
 
     it("DELETE /user/:id - Should delete user fail when it not exists", async () => {
-        const response = await request(app).delete("/user/1");
+        const response = await request(app).delete("/user/2");
         const actualResponse = response.body.message;
 
         expect(actualResponse).toEqual("User not exists");
