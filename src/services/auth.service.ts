@@ -7,10 +7,6 @@ import bcrypt from "bcrypt";
 export class AuthService {
 	constructor() {}
 
-	async login() {}
-
-	async register() {}
-
 	async hash(password: string) {
 		return bcrypt.hash(password, 12);
 	}

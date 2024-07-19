@@ -2,6 +2,7 @@ import { Repository } from "typeorm";
 import { AppDataSource } from "../database/db.service";
 import { User } from "@/entity/user.entity";
 import { CreateUserDto } from "@/dto/user.dto";
+import { z } from "zod";
 
 export class UserService {
 	constructor(
@@ -9,7 +10,7 @@ export class UserService {
 			User
 		)
 	) { }
-	createUser(newUser: CreateUserDto) {
+	createUser(newUser: z.infer<typeof CreateUserDto>) {
 		return this.userRepository.insert(newUser);
 	}
 

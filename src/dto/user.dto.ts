@@ -1,17 +1,9 @@
-import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
+import z from "zod"
 
+export const CreateUserDto = z.object({
+    email: z.string().email(),
 
-export class CreateUserDto{
-    @IsEmail()
-    @IsNotEmpty()
-    email: string;
+    password: z.string().min(6).max(72),
 
-    @IsString()
-    @MaxLength(72)
-    @MinLength(8)
-    password: string;
-
-    @IsString()
-    @IsNotEmpty()
-    name: string;
-}
+    name: z.string()
+})
