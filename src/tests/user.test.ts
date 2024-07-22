@@ -51,6 +51,21 @@ describe("User service test", () => {
 });
 
 describe("User route", () => {
+    it("POST /user - success", async () => {
+        const user = {
+            name: "test",
+            availableStart: "13:25",
+            availableEnd: "13:45",
+        };
+        const result = await request(app).post("/user").send(user);
+        expect(result.statusCode).toEqual(201);
+    });
+
+    it("POST /user - failed, invalid body", async () => {
+        const result = await request(app).post("/user").send({});
+        expect(result.statusCode).toEqual(400);
+    });
+
 	it("GET /user/:id - success", async () => {
 		await addUser();
 		const result = await request(app).get("/user/1");
