@@ -8,7 +8,6 @@ export class UserService {
 			"User"
 		)
 	) { }
-	//async createUser() {}
 	async createUser(user: User) {
 		const formattedUser = {
 			name: user.name,
