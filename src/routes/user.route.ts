@@ -8,6 +8,7 @@ import { User } from "@/entity/user.entity";
 import { CreateUserDto } from "@/dto/create-user.dto";
 import RequestValidator from "@/middlewares/class-validate.middleware";
 import { UpdateUserDto } from "@/dto/update-user.dto";
+import { ValidIDMiddleware } from "@/middlewares/valid-id.middleware";
 
 const userRouter = express.Router();
 const userController = new UserController();
@@ -21,8 +22,9 @@ userRouter.get("/", async (req, res) => {
 
 userRouter.post(
 	"/",
-	async (req, res, next) =>
-		RequestValidator.validateBody(req, res, next, CreateUserDto),
+	async (req, res, next) => {
+		RequestValidator.validateBody(req, res, next, CreateUserDto);
+	},
 	async (req, res) => {
 		const userRepository: Repository<User> =
 			AppDataSource.getRepository("User");
@@ -35,13 +37,9 @@ userRouter.post(
 	}
 );
 
-userRouter.get("/:id", async (req, res) => {
+userRouter.get("/:id", ValidIDMiddleware.isValidId, async (req, res) => {
 	try {
-		const id = req.params.id;
-		if (id != null && !Number.isInteger(Number(id)))
-			return res.status(400).json({ message: "Invalid user id" });
-
-		const user = await userController.getUserById(id);
+		const user = await userController.getUserById(req.params.id);
 		if (!user) return res.status(404).json({ message: "User not found" });
 
 		return res.status(200).send(user);
@@ -52,8 +50,10 @@ userRouter.get("/:id", async (req, res) => {
 
 userRouter.put(
 	"/:id",
-	async (req, res, next) =>
+	async (req, res, next) => {
 		RequestValidator.validateBody(req, res, next, UpdateUserDto),
+			ValidIDMiddleware.isValidId;
+	},
 	async (req, res) => {
 		const id = req.params.id;
 		if (id == null || !Number.isInteger(Number(id))) {
@@ -79,7 +79,7 @@ userRouter.put(
 	}
 );
 
-userRouter.delete("/:id", async (req, res) => {
+userRouter.delete("/:id", ValidIDMiddleware.isValidId, async (req, res) => {
 	try {
 		const userId = Number(req.params.id);
 		const result = await userController.deleteUserById(userId);
