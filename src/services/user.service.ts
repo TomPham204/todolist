@@ -15,14 +15,15 @@ export class UserService {
 			availableEnd: user.availableEnd,
 		};
 		console.log(user, 'user');
-		
+
 		const res = await this.userRepository.save(formattedUser);
 		return res;
 	}
 
-	async updateUser(id: number, user:User ) { 
+	async updateUser(id: number, user: User) {
+		//if (!user.email) throw new Error("Email is required!");
 		const existedUser = await this.userRepository.findOne({ where: { id } }) || null;
-		if (!existedUser) throw new Error("User not found");
+		if (!existedUser) throw new Error("User not found!");
 		const result = await this.userRepository.update(id, user);
 		return result;
 	}
@@ -40,7 +41,7 @@ export class UserService {
 		if (id == null || !Number(id)) {
 			throw new Error("Invalid Id");
 		}
-		
+
 		const user = await this.userRepository.findOneBy({ id: id });
 		if (user == null) {
 			throw new Error("User not exists");
