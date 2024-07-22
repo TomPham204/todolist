@@ -1,6 +1,8 @@
 import { DeleteResult, Repository } from "typeorm";
 import { AppDataSource } from "../database/db.service";
 import { User } from "@/entity/user.entity";
+import { UserDto } from "@/dto/user.dto";
+import { CreateUserDto } from "@/dto/create-user.dto";
 
 export class UserService {
 	constructor(
@@ -8,13 +10,12 @@ export class UserService {
 			"User"
 		)
 	) { }
-	async createUser(user: User) {
+	async createUser(user: CreateUserDto) {
 		const formattedUser = {
 			name: user.name,
 			availabletart: user.availableStart,
 			availableEnd: user.availableEnd,
 		};
-		console.log(user, 'user');
 		
 		const res = await this.userRepository.save(formattedUser);
 		return res;
