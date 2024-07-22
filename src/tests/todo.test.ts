@@ -88,8 +88,8 @@ describe("Todo API", () => {
 
 	it("GET /todo/:id - SQL injection, failure", async () => {
 		const result = await request(app).get("/todo/1; DROP TABLE todo");
-		expect(result.statusCode).toEqual(403);
-		expect(result.body.error).toEqual("Invalid ID");
+		expect(result.statusCode).toEqual(400);
+		expect(result.body.message).toEqual("Invalid ID");
 	});
 
 	it("PUT /todo/:id - invalid startDate format, failure", async () => {
