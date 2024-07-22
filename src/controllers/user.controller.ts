@@ -1,8 +1,9 @@
 import { UserDto } from "@/dto/user.dto";
+import { User } from "@/entity/user.entity";
 import { UserService } from "@/services/user.service";
 
 export class UserController {
-	constructor(private userService = new UserService()) {}
+	constructor(private userService = new UserService()) { }
 
 	async getUsers() {
 		const res = await this.userService.getUsers();
@@ -14,7 +15,8 @@ export class UserController {
 		return <UserDto>user;
 	}
 
-	async updateUserById(id: string, user: UserDto) {
+
+	async updateUserById(id: string, user: User) {
 		const result = await this.userService.updateUser(parseInt(id), user);
 		if (result.affected === 1) return result;
 		else throw new Error("Todo not updated");
