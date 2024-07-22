@@ -22,7 +22,9 @@ export class UserController {
 		else throw new Error("Todo not updated");
 	}
 
-	async deleteUserById(id: number): Promise<{ statusCode: number, message: string }> {
+	async deleteUserById(
+		id: number
+	): Promise<{ statusCode: number; message: string }> {
 		const response = (await this.userService.deleteUserById(id)).affected;
 		if (response != 1) {
 			return { statusCode: 400, message: "failed" };
