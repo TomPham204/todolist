@@ -6,12 +6,19 @@ import { AppDataSource } from "@/database/db.service";
 import { User } from "@/entity/user.entity";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import dotenv from "dotenv";
+import { z } from "zod";
+import { CreateUserDto, LoginUserDto } from "@/dto/user.dto";
 dotenv.config();
 
 const authService = new AuthService();
 
 async function initializeTestApp() {
   await AppDataSource.initialize();
+}
+
+async function insertSampleUser(user: z.infer<typeof CreateUserDto>) {
+  user.password = await bcrypt.hash(user.password, 12);
+  await AppDataSource.createQueryBuilder().insert().into(User).values(user).execute();
 }
 
 describe("Auth Service", () => {
@@ -112,7 +119,7 @@ describe("Auth Controller", () => {
   })
 
   it("Should not register an user => Invalid data", async () => {
-    const invalidUsers = [
+    const invalidUsers: z.infer<typeof CreateUserDto>[] = [
       //Invalid Email
       {
         ...exampleUser,
@@ -130,6 +137,11 @@ describe("Auth Controller", () => {
         ...exampleUser,
         email: "a@a.com",
         password: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" //73 characters
+      },
+      {
+        ...exampleUser,
+        availableStart: "",
+        availableEnd: ""
       }
     ]
 
@@ -139,6 +151,64 @@ describe("Auth Controller", () => {
         fail();
       } catch (error) {
         expect(error).toEqual(new Error("Validation Error"));
+      }
+    }
+  })
+
+  it("Should be login", async () => {
+    const sampleUser = {
+      name: user[0].name,
+      email: user[0].email,
+      password: user[0].password,
+      availableStart: user[0].availableStart,
+      availableEnd: user[0].availableEnd
+    }
+
+    await insertSampleUser(sampleUser); //Create a user
+
+    const exampleUser = {
+      email: user[0].email,
+      password: user[0].password,
+    }
+
+    const token = await authController.login(exampleUser);
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    expect(payload.email).toEqual(exampleUser.email);
+  })
+
+  it("Should not login => Email or password is incorrect", async () => {
+    const sampleUser = {
+      name: user[0].name,
+      email: user[0].email,
+      password: user[0].password,
+      availableStart: user[0].availableStart,
+      availableEnd: user[0].availableEnd
+    }
+    
+    await insertSampleUser(sampleUser); //Create a user
+
+    const exampleUser = {
+      email: user[0].email,
+      password: user[0].password,
+    }
+
+    const invalidUsers: z.infer<typeof LoginUserDto>[] = [
+      {
+        ...exampleUser,
+        email: "notExistEmail@a.com"
+      },
+      {
+        ...exampleUser,
+        password: "wrongPassword"
+      }
+    ];
+
+    for (const invalidUser of invalidUsers) {
+      try {
+        await authController.login(invalidUser);
+        fail();
+      } catch (error) {
+        expect(error).toEqual(new Error("Email or password is incorrect"));
       }
     }
   })

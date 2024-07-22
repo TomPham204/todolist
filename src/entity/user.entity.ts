@@ -13,6 +13,9 @@ export class User {
 	email: string;
 
 	@Column("text")
+	password: string;
+
+	@Column("text")
 	availableStart: string; // this user is available starting from time availableStart. should be time and minute in 24hrs format. e.g. 13:25
 
 	@Column("text")
