@@ -1,6 +1,8 @@
 import { DeleteResult, Repository } from "typeorm";
 import { AppDataSource } from "../database/db.service";
 import { User } from "@/entity/user.entity";
+import { UserDto } from "@/dto/user.dto";
+import { CreateUserDto } from "@/dto/create-user.dto";
 
 export class UserService {
 	constructor(
