@@ -2,13 +2,17 @@ import request from "supertest";
 import express from "express";
 import bodyParser from "body-parser";
 import { AppDataSource } from "../database/db.service";
-import { Repository } from "typeorm";
+import { QueryFailedError, Repository } from "typeorm";
 import { User } from "@/entity/user.entity";
 import { userRouter } from "@/routes/user.route";
 import { UserService } from "@/services/user.service";
+import { UserController } from "@/controllers/user.controller";
+import { StatusCodes } from 'http-status-codes'
 
 const app = express();
 let userService: UserService;
+let userController: UserController;
+let userRepository: Repository<User>;
 app.use(bodyParser.json());
 app.use("/user", userRouter);
 
@@ -28,7 +32,14 @@ async function addUser() {
 
 beforeAll(async () => {
 	await initializeTestApp();
+	initDependencies();
 });
+
+const initDependencies = () => {
+	userRepository = AppDataSource.getRepository("User");
+	userService = new UserService(userRepository);
+	userController = new UserController(userService);
+}
 
 afterEach(async () => {
 	await AppDataSource.createQueryBuilder().delete().from(User).execute();
@@ -67,36 +78,6 @@ describe("User route", () => {
 		const result = await request(app).get("/user/abc");
 		expect(result.statusCode).toEqual(400);
 		expect(result.body.message).toEqual("Invalid user id");
-	});
-
-	it("DELETE /user/:id - Should delete user fail when invalid id", async () => {
-		const response = await request(app).delete("/user/asdfasdf");
-		const actualResponse = response.body.message;
-
-		expect(actualResponse).toEqual("Invalid Id");
-		expect(response.statusCode).toEqual(400);
-	});
-
-	it("DELETE /user/:id - Should delete user fail when path incorrect", async () => {
-		const response = await request(app).delete("/user/");
-		expect(response.statusCode).toEqual(404);
-	});
-
-	it("DELETE /user/:id - Should delete user fail when it not exists", async () => {
-		const response = await request(app).delete("/user/2");
-		const actualResponse = response.body.message;
-
-		expect(actualResponse).toEqual("User not exists");
-		expect(response.statusCode).toEqual(400);
-	});
-
-	it("DELETE /user/:id - Should delete user by id success", async () => {
-		await addUser();
-		const response = await request(app).delete("/user/1");
-		const actualResponse = response.body.message;
-
-		expect(actualResponse).toEqual("success");
-		expect(response.statusCode).toEqual(200);
 	});
 
 	it("GET /user - has user success", async () => {
@@ -139,4 +120,176 @@ describe("User route", () => {
 		expect(result.statusCode).toEqual(400);
 		expect(result.body.message).toBe("Invalid body");
 	});
+});
+
+describe("USER DELETE API TEST", () => {
+	beforeEach(async () => {
+		await addUser();
+	});
+
+	it("/:id - Should delete user by id success", async () => {
+        const response = await request(app).delete("/user/1");
+        const actualResponse = response.body.message;
+
+        expect(actualResponse).toEqual("success");
+        expect(response.statusCode).toEqual(200);
+    });
+
+    it("/:id - Should delete user fail when invalid id", async () => {
+        const response = await request(app).delete("/user/asdfasdf");
+        const actualResponse = response.body.message;
+
+        expect(actualResponse).toEqual("Invalid id");
+        expect(response.statusCode).toEqual(400);
+    });
+
+    it("/:id - Should delete user fail when path incorrect", async () => {
+        const response = await request(app).delete("/user/");
+        expect(response.statusCode).toEqual(404);
+    });
+
+    it("/:id - Should delete user fail when it not exists", async () => {
+        const response = await request(app).delete("/user/2");
+        const actualResponse = response.body.message;
+
+        expect(actualResponse).toEqual("User not exists");
+        expect(response.statusCode).toEqual(400);
+    });
+});
+
+describe("USER DELETE SERVICE AND REPOSITORY TEST", () => {
+    // Data initialize
+    const currentDateStr = new Date().toISOString();
+    let user: User = {
+        id: 3,
+        name: "example",
+        availableStart: currentDateStr,
+        availableEnd: currentDateStr
+    };
+
+    it("/:id - Should delete user successfully", async () => {
+		// BEGIN
+		const expected = 1;
+		const userResponse = await userRepository.save(user);
+
+		// WHEN
+		const actualResult = (await userService.deleteUserById(userResponse.id)).affected;
+		expect(actualResult).toEqual(1);
+
+		// THEN
+		expect(actualResult).toBe(1);
+		expect(actualResult).toEqual(expected);
+    });
+
+    it("/:id - Should delete user fail when invalid id and not exists", async () => {
+		// BEGIN
+		const repoCases = [
+			{
+				id: "-1@",
+				expectedMsg: "no such column",
+			},
+			{
+				id: -1,
+				expectedMsg: "no such column",
+			},
+		];
+
+		const serviceCases = [
+			{
+				id: "-1@",
+				expectedMsg: "Invalid id",
+			},
+			{
+				id: -1,
+				expectedMsg: "User not exists",
+			},
+		];
+
+		repoCases.forEach(async (user) => {
+			try {
+				// WHEN
+				await userRepository.delete(Number(user.id));
+	
+			} catch (error) {
+				// THEN
+				let err = error as QueryFailedError;
+				const actualMsg = err.message.split(":")[1].trim();
+				expect(actualMsg).toEqual(user.expectedMsg);
+	
+			}
+		});
+
+		serviceCases.forEach(async (user) => {
+			try {
+				// WHEN
+				await userService.deleteUserById(Number(user.id));
+	
+			} catch (error) {
+				// THEN
+				const err = error as Error;
+				const actualMsg = err.message;
+				expect(actualMsg).toEqual(user.expectedMsg);
+				
+			}
+		});
+    });
+});
+
+describe("USER DELETE CONTROLLER AND SERVICE TEST", () => {
+	// Data initialize
+	const OK = StatusCodes.OK;
+	const currentDateStr = new Date().toISOString();
+	let user: User = {
+		id: 3,
+		name: "example",
+		availableStart: currentDateStr,
+		availableEnd: currentDateStr
+	};
+
+	it("/:id - Should delete user successfully", async () => {
+		// BEGIN
+		const expectedMsg = "success";
+		const response = await userService.createUser(user);
+
+		// WHEN
+		const { message, statusCode } = await userController.deleteUserById(response.id);
+		
+		// THEN
+		expect(OK).toEqual(statusCode);
+		expect(message).toEqual(expectedMsg);
+    });
+
+    it("/:id - Should delete user fail when invalid id and not exists", async () => {
+		// BEGIN
+		const cases = [
+			{
+				id: "-1@",
+				expectedMsg: "Invalid id"
+			},
+			{
+				id: -1,
+				expectedMsg: "User not exists"
+			}
+		]
+
+		cases.forEach(async (user) => {
+			try {
+				// WHEN
+				await userService.deleteUserById(Number(user.id));
+
+			} catch (error) {
+				// THEN
+				const err = error as Error;
+				const actualErr = err.message;
+				expect(actualErr).toEqual(user.expectedMsg);
+			}
+			
+			// WHEN
+			const response = await request(app).delete(`/user/${user.id}`);
+        	const actualResponse = response.body.message;
+			
+			// THEN
+			expect(actualResponse).toBe(user.expectedMsg);
+		});
+    });
 });

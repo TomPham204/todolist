@@ -8,13 +8,13 @@ export class UserService {
 			"User"
 		)
 	) { }
-	async createUser(user: User) {
+	
+	async createUser(user: User): Promise<User> {
 		const formattedUser = {
 			name: user.name,
-			availabletart: user.availableStart,
+			availableStart: user.availableStart,
 			availableEnd: user.availableEnd,
 		};
-		console.log(user, 'user');
 		
 		const res = await this.userRepository.save(formattedUser);
 		return res;
@@ -38,7 +38,7 @@ export class UserService {
 
 	async deleteUserById(id: number): Promise<DeleteResult> {
 		if (id == null || !Number(id)) {
-			throw new Error("Invalid Id");
+			throw new Error("Invalid id");
 		}
 		
 		const user = await this.userRepository.findOneBy({ id: id });
