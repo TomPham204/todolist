@@ -27,6 +27,8 @@ async function addUser() {
 		name: "John Doe",
 		availableStart: "11:30",
 		availableEnd: "12:30",
+		email: "a@a.com",
+		password: "hello"
 	});
 }
 
@@ -67,6 +69,8 @@ describe("User route", () => {
 			name: "test",
 			availableStart: "13:25",
 			availableEnd: "13:45",
+			email: "a@a.com",
+			password: "hello"
 		};
 		const result = await request(app).post("/user").send(user);
 		expect(result.statusCode).toEqual(201);
@@ -154,7 +158,7 @@ describe("USER DELETE API TEST", () => {
         const response = await request(app).delete("/user/asdfasdf");
         const actualResponse = response.body.message;
 
-        expect(actualResponse).toEqual("Invalid id");
+        expect(actualResponse).toEqual("Invalid ID");
         expect(response.statusCode).toEqual(400);
     });
 
@@ -176,11 +180,13 @@ describe("USER DELETE SERVICE AND REPOSITORY TEST", () => {
     // Data initialize
     const currentDateStr = new Date().toISOString();
     let user: User = {
-        id: 3,
-        name: "example",
-        availableStart: currentDateStr,
-        availableEnd: currentDateStr
-    };
+		id: 3,
+		name: "example",
+		availableStart: currentDateStr,
+		availableEnd: currentDateStr,
+		email: "a@a.com",
+		password: "hello"
+	};
 
     it("/:id - Should delete user successfully", async () => {
 		// BEGIN
@@ -213,11 +219,13 @@ describe("USER DELETE SERVICE AND REPOSITORY TEST", () => {
 			{
 				id: "-1@",
 				expectedMsg: "Invalid id",
+				expectedMsgCtrl: "Invalid ID",
 			},
 			{
 				id: -1,
 				expectedMsg: "User not exists",
-			},
+				expectedMsgCtrl: "User not exists",
+			}
 		];
 
 		repoCases.forEach(async (user) => {
@@ -258,7 +266,9 @@ describe("USER DELETE CONTROLLER AND SERVICE TEST", () => {
 		id: 3,
 		name: "example",
 		availableStart: currentDateStr,
-		availableEnd: currentDateStr
+		availableEnd: currentDateStr,
+		email: "a@a.com",
+		password: "hello"
 	};
 
 	it("/:id - Should delete user successfully", async () => {
@@ -279,11 +289,13 @@ describe("USER DELETE CONTROLLER AND SERVICE TEST", () => {
 		const cases = [
 			{
 				id: "-1@",
-				expectedMsg: "Invalid id"
+				expectedMsg: "Invalid id",
+				expectedMsgCtrl: "Invalid ID",
 			},
 			{
 				id: -1,
-				expectedMsg: "User not exists"
+				expectedMsg: "User not exists",
+				expectedMsgCtrl: "User not exists",
 			}
 		]
 
@@ -304,7 +316,7 @@ describe("USER DELETE CONTROLLER AND SERVICE TEST", () => {
         	const actualResponse = response.body.message;
 			
 			// THEN
-			expect(actualResponse).toBe(user.expectedMsg);
+			expect(actualResponse).toBe(user.expectedMsgCtrl);
 		});
     });
 });

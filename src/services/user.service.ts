@@ -16,6 +16,8 @@ export class UserService {
 			name: user.name,
 			availableStart: user.availableStart,
 			availableEnd: user.availableEnd,
+			email: user.email,
+			password: user.password
 		};
 		
 		const res = await this.userRepository.save(formattedUser);
