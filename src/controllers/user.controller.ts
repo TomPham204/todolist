@@ -3,7 +3,7 @@ import { User } from "@/entity/user.entity";
 import { UserService } from "@/services/user.service";
 
 export class UserController {
-	constructor(private userService = new UserService()) { }
+	constructor(private userService = new UserService()) {}
 
 	async getUsers() {
 		const res = await this.userService.getUsers();
